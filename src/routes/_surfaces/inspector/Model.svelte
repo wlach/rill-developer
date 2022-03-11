@@ -101,7 +101,7 @@ onMount(() => {
   <div bind:this={container}>
 
     {#if tables}
-    <div class='cost p-4 text-right grid  justify-end' style=' font-size: 16px;'>
+    <div class='cost p-4 text-right grid  justify-end justify-items-end' style=' font-size: 16px;'>
       <Tooltip location="left" alignment="center" distance={8}>
       <div class="w-max text-right">
             {#if rollup !== 0}
