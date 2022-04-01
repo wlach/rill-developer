@@ -18,6 +18,7 @@ export class ProfileColumnActions extends DataModelerActions {
                                        entityType: EntityType, entityId: string): Promise<void> {
         const persistentEntity = this.dataModelerStateService
             .getEntityById(entityType, StateType.Persistent, entityId);
+        console.log(persistentEntity.tableName)
         const entity = stateService.getById(entityId);
         if (!entity) {
             console.error(`Entity not found. entityType=${entityType} entityId=${entityId}`);

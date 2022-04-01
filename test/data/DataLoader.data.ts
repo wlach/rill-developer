@@ -82,8 +82,8 @@ export const ParquetFileTestData: FileImportTestDataProvider = {
     title: "ParquetFiles",
     subData: [
         ["AdBids.parquet", AD_BID_COUNT, AdBidsColumnsTestData],
-        ["AdImpressions.parquet", AD_IMPRESSION_COUNT, AdImpressionColumnsTestData],
-        ["Users.parquet", MAX_USERS, UserColumnsTestData],
+        // ["AdImpressions.parquet", AD_IMPRESSION_COUNT, AdImpressionColumnsTestData],
+        // ["Users.parquet", MAX_USERS, UserColumnsTestData],
     ].map((data: Args) => {
         return { title: data[0], args: data };
     }),

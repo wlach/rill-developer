@@ -25,6 +25,7 @@ import type {
 } from "$common/data-modeler-state-service/entity-state-service/EntityStateServicesMap";
 import type { CommonStateActions } from "$common/data-modeler-state-service/CommonStateActions";
 import type { ApplicationStateActions } from "$common/data-modeler-state-service/ApplicationStateActions";
+import {BatchedStateUpdate} from "$common/data-modeler-state-service/BatchedStateUpdate";
 
 enablePatches();
 
@@ -62,6 +63,7 @@ export class DataModelerStateService {
     private readonly entityStateServicesMap: EntityStateServicesMapType = {};
 
     private patchesSubscribers: Array<PatchesSubscriber> = [];
+    private batchedStateUpdate: BatchedStateUpdate;
 
     public constructor(private readonly stateActions: Array<StateActions>,
                        public readonly entityStateServices: Array<EntityStateService<any>>,
@@ -74,6 +76,11 @@ export class DataModelerStateService {
         entityStateServices.forEach((entityStateService) => {
             this.entityStateServicesMap[entityStateService.entityType] ??= {};
             (this.entityStateServicesMap[entityStateService.entityType] as any)[entityStateService.stateType] = entityStateService;
+        });
+
+        this.batchedStateUpdate = new BatchedStateUpdate((patches, entityType, stateType) => {
+            this.patchesSubscribers.forEach(subscriber =>
+                subscriber(entityType, stateType, patches));
         });
     }
 
@@ -133,6 +140,7 @@ export class DataModelerStateService {
         const stateService = this.entityStateServicesMap
             [stateTypes[0] ?? args[0] as any]?.[stateTypes[1] ?? args[1] as any];
         this.updateStateAndEmitPatches(stateService, (draftState) => {
+            console.log(action)
             actionsInstance[action].call(actionsInstance,
                 {stateService, draftState}, ...args);
         });
@@ -157,12 +165,13 @@ export class DataModelerStateService {
 
     public updateStateAndEmitPatches(service: EntityStateService<any>,
                                      callback: (draft) => void) {
-        service.updateState((draft) => {
-            callback(draft);
-            draft.lastUpdated = Date.now();
-        }, (patches) => {
-            this.patchesSubscribers.forEach(subscriber =>
-                subscriber(service.entityType, service.stateType, patches));
-        });
+        this.batchedStateUpdate.updateState(service, callback);
+        // service.updateState((draft) => {
+        //     callback(draft);
+        //     draft.lastUpdated = Date.now();
+        // }, (patches) => {
+        //     this.patchesSubscribers.forEach(subscriber =>
+        //         subscriber(service.entityType, service.stateType, patches));
+        // });
     }
 }

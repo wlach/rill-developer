@@ -111,7 +111,7 @@ export class FunctionalTestBase extends TestBase {
     }
 
     private async waitForEntity(entityType: EntityType): Promise<void> {
-        await asyncWait(200);
+        await asyncWait(500);
         await waitUntil(() => {
             const currentState = this.clientDataModelerStateService
                 .getEntityStateService(entityType, StateType.Derived)
